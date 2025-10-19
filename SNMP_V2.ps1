@@ -526,12 +526,12 @@ try {
     # Clear any existing permitted managers first
     try {
         # Remove all numeric PermittedManager properties (cleanup before re-adding)
-        $existingProps = (Get-Item $pm).Property | Where-Object { $_ -match '^\d+$' }
-        foreach ($prop in $existingProps) {
-            Remove-ItemProperty -Path $pm -Name $prop -ErrorAction SilentlyContinue
+        `$existingProps = (Get-Item `$pm).Property | Where-Object { `$_ -match '^\d+$' }
+        foreach (`$prop in `$existingProps) {
+            Remove-ItemProperty -Path `$pm -Name `$prop -ErrorAction SilentlyContinue
         }
     } catch {
-        Write-Log "Error clearing permitted managers: $($_.Exception.Message)"
+        Write-Log "Error clearing permitted managers: `$(`$_.Exception.Message)"
     }
     
     Write-Log "Configuring services and firewall"
