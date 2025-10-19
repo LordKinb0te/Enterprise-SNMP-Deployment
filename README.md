@@ -167,4 +167,3 @@ Built to solve real enterprise deployment challenges. Self-taught PowerShell and
 ## License
 
 MIT
-'@ | Out-File README.md -Encoding UTF8
