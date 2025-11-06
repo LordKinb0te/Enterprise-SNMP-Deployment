@@ -40,7 +40,7 @@ PowerShell-based deployment system for configuring SNMP on Windows workstations 
            ▼
 ┌─────────────────────┐
 │ LibreNMS Monitoring │
-│  (192.168.123.99)   │
+│  (192.168.xx.xx)   │
 └─────────────────────┘
 ```
 
@@ -74,11 +74,11 @@ Create or edit `config-production-V2.json`:
 
 ```json
 {
-  "SearchBase": "OU=Computers,OU=MyBusiness,DC=wickinn,DC=local",
+  "SearchBase": "OU=Computers,OU=MyBusiness,DC=DOMAIN,DC=local",
   "CommunityStringSecretName": "snmp-community-string",
   "CommunityPermission": 4,
   "PermittedManagers": [
-    "192.168.123.99"
+    "192.168.xx.xx"
   ],
   "SysContact": "IT Department",
   "SysLocation": "Beach",
@@ -159,12 +159,12 @@ The script outputs:
 
 The script includes comprehensive idempotency checks that verify:
 
-1. ✅ SNMP service is running
-2. ✅ Community string matches expected value
-3. ✅ All permitted managers match expected list
-4. ✅ sysContact matches expected value
-5. ✅ sysLocation matches expected value
-6. ✅ sysServices equals `0x41`
+1.  SNMP service is running
+2.  Community string matches expected value
+3.  All permitted managers match expected list
+4.  sysContact matches expected value
+5.  sysLocation matches expected value
+6.  sysServices equals `0x41`
 
 If all checks pass, the script skips configuration with status `SKIP: Already configured`. If any check fails, it proceeds with full configuration.
 
@@ -201,7 +201,7 @@ On each target workstation, check:
 ### Test SNMP Manually
 
 ```powershell
-# From LibreNMS server or any machine with snmpwalk
+# From LibreNMS server or any machine with snmpwalk (like wsl wink wink)
 snmpwalk -v2c -c <community-string> <hostname>
 ```
 
@@ -238,25 +238,6 @@ Expected output includes system information and Windows-specific OIDs if WMI-SNM
 | `SNMP_V3.ps1` | Main deployment script - discovers workstations, deploys SNMP configuration |
 | `New-EncryptedSecret.ps1` | Creates encrypted SNMP community string using Windows DPAPI |
 | `config-production-V2.json` | Configuration file specifying OU, managers, timeouts, etc. |
-
-## Technical Details
-
-**Execution Method**: DCOM/CIM for remote command execution (no WinRM required)  
-**Authentication**: Kerberos delegation (credential-less)  
-**Payload Delivery**: SMB admin shares (`\\hostname\C$\Windows\Temp\`)  
-**Async Pattern**: Scheduled tasks running as SYSTEM  
-**Error Handling**: Comprehensive try/catch/finally with logging  
-**FoD Source**: Microsoft Update (temporarily bypasses WSUS)  
-**Timeout**: Configurable per-machine timeout (default: 15 minutes)
-
-## Real-World Context
-
-Built for enterprise deployment across multiple locations with:
-- 100+ Windows workstations
-- Multiple Active Directory OUs
-- Limited maintenance windows
-- Zero tolerance for user disruption
-- Need for centralized monitoring via LibreNMS
 
 ## Future Enhancements
 
